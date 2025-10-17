@@ -322,6 +322,58 @@ def eclipse_duration(semi_major_axis: float, eccentricity: float = 0.0) -> float
     return eclipse_time
 
 
+def orbital_positions(semi_major_axis: float,
+                      inclination: float = 0.0,
+                      raan: float = 0.0,
+                      arg_perigee: float = 0.0,
+                      num_points: int = 360) -> np.ndarray:
+    """
+    Generate ECI position samples for a (near-)circular orbit given classical elements.
+    Assumes semi_major_axis in km and angles in radians. Returns an (N,3) array of positions (km).
+
+    Args:
+        semi_major_axis: semi-major axis (km). For circular orbits this is orbital radius.
+        inclination: inclination (radians)
+        raan: right ascension of the ascending node (radians)
+        arg_perigee: argument of perigee (radians)
+        num_points: number of sample points around the orbit
+
+    Returns:
+        positions: numpy.ndarray shape (num_points, 3) of ECI coordinates (km)
+    """
+    # Circular radius
+    r = float(semi_major_axis)
+
+    # True anomaly samples
+    nu = np.linspace(0.0, 2.0 * math.pi, num_points, endpoint=False)
+
+    # Positions in perifocal frame (p-frame)
+    x_pf = r * np.cos(nu)
+    y_pf = r * np.sin(nu)
+    z_pf = np.zeros_like(nu)
+    r_pf = np.vstack((x_pf, y_pf, z_pf))  # shape (3, N)
+
+    # Rotation matrices
+    def R_z(theta: float) -> np.ndarray:
+        c = math.cos(theta); s = math.sin(theta)
+        return np.array([[c, -s, 0.0],
+                         [s,  c, 0.0],
+                         [0.0, 0.0, 1.0]])
+
+    def R_x(theta: float) -> np.ndarray:
+        c = math.cos(theta); s = math.sin(theta)
+        return np.array([[1.0, 0.0, 0.0],
+                         [0.0,  c, -s],
+                         [0.0,  s,  c]])
+
+    # Perifocal -> ECI: R = R_z(raan) * R_x(inclination) * R_z(arg_perigee)
+    R = R_z(raan) @ R_x(inclination) @ R_z(arg_perigee)
+
+    # Rotate all samples into ECI
+    r_eci = R @ r_pf  # shape (3, N)
+    return r_eci.T  # shape (N, 3)
+
+
 def test_utils():
     """Test utility functions."""
     print("Testing Utility Functions...")
@@ -376,6 +428,16 @@ def test_utils():
     eclipse_time = eclipse_duration(leo_sma)
     print(f"  LEO (400 km altitude)")
     print(f"  Max eclipse duration: {eclipse_time/60:.1f} minutes")
+    
+    # Test 7: Orbital positions
+    print("\nTest 7: Orbital Positions")
+    sma_test = altitude_to_semi_major_axis(500)  # 500 km altitude
+    incl_test = math.radians(98.7)  # Retrograde
+    raan_test = 0.0
+    argp_test = 0.0
+    positions = orbital_positions(sma_test, incl_test, raan_test, argp_test, num_points=10)
+    for i, pos in enumerate(positions):
+        print(f"  Position {i+1}: X={pos[0]:.1f} km, Y={pos[1]:.1f} km, Z={pos[2]:.1f} km")
     
     print("-" * 40)
     print("Tests complete!")

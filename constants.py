@@ -13,8 +13,6 @@ EARTH_ROTATION_RATE = 7.2921159e-5  # rad/s - Earth's rotation rate
 
 # Mathematical constants
 TWO_PI = 2 * math.pi
-DEG_TO_RAD = math.pi / 180.0
-RAD_TO_DEG = 180.0 / math.pi
 
 # Numerical tolerances
 KEPLER_TOLERANCE = 1e-10  # Tolerance for Kepler equation solver

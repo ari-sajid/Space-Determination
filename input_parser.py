@@ -4,9 +4,8 @@ Primarily handles Two-Line Element (TLE) format from NORAD/Celestrak.
 """
 
 import re
-import math
 from datetime import datetime, timedelta
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 from orbital_elements import OrbitalElements
 import constants
 

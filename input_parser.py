@@ -60,10 +60,8 @@ class InputParser:
             return False
         
         # Check if we have lines starting with "1 " and "2 "
-        has_line1 = any(line.startswith('1 ') for line in lines)
-        has_line2 = any(line.startswith('2 ') for line in lines)
-        
-        return has_line1 and has_line2
+        return {'1 ', '2 '} <= {line[:2] for line in lines}
+
     
     def parse_tle(self, lines: List[str]) -> OrbitalElements:
         """

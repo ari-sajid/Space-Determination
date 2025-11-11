@@ -36,7 +36,14 @@ class OrbitalElements:
     mu: float = constants.EARTH_MU  # Gravitational parameter
     
     def __post_init__(self):
-        """Validate orbital elements after initialization."""
+        """
+        Validate orbital elements after initialization.
+        
+        Raises
+        ------
+        ValueError
+            If orbital elements are invalid 
+        """
         self.validate()
     
     def validate(self):
@@ -66,7 +73,8 @@ class OrbitalElements:
         Calculate orbital period.
         
         Returns:
-            float: Orbital period in seconds (None for non-elliptical orbits)
+            float: Orbital period in seconds
+            None for non-elliptical orbits
         """
         if self.e >= 1.0:  # Parabolic or hyperbolic orbit
             return None
@@ -88,7 +96,8 @@ class OrbitalElements:
         Calculate apogee distance (furthest point from Earth).
         
         Returns:
-            float: Apogee distance in km (None for non-elliptical orbits)
+            float: Apogee distance in km 
+            None for non-elliptical orbits
         """
         if self.e >= 1.0:
             return None
@@ -137,6 +146,21 @@ class OrbitalElements:
             
         Returns:
             OrbitalElements: Computed orbital elements
+
+        Raises
+        ------
+        ValueError
+            If position or velocity vector is not of length 3
+
+        Example
+        --------
+        >>> from datetime import datetime
+        >>> r = (7000, 0, 0)
+        >>> v = (0, 7.5, 0)
+        >>> epoch = datetime.utcnow()
+        >>> oe = OrbitalElements.from_state_vector(r, v, epoch)
+        >>> print(oe.a)
+        7000.0
         """
         # This is a placeholder - implement the full conversion
         # This involves computing h (angular momentum), n (node vector),
@@ -160,7 +184,20 @@ class OrbitalElements:
         Convert orbital elements to dictionary.
         
         Returns:
-            dict: Dictionary representation of orbital elements
+            dict: Dictionary representation of orbital elements, shown below 
+
+        dict
+            Dictionary with keys:
+            - 'semi_major_axis_km'
+            - 'eccentricity'
+            - 'inclination_deg'
+            - 'raan_deg'
+            - 'arg_perigee_deg'
+            - 'mean_anomaly_deg'
+            - 'epoch'
+            - 'period_hours'
+            - 'orbit_typ
+
         """
         return {
             'semi_major_axis_km': self.a,
@@ -175,7 +212,14 @@ class OrbitalElements:
         }
     
     def __str__(self) -> str:
-        """String representation of orbital elements."""
+        """String representation of orbital elements.
+        
+        Returns
+        -------
+        str
+            human-readable formatted string of orbital elements
+            
+        """
         return (
             f"Orbital Elements (Epoch: {self.epoch.isoformat()})\n"
             f"  Semi-major axis: {self.a:.3f} km\n"

@@ -1,6 +1,4 @@
 numpy
 matplotlib
 requests
-datetime
-typing
 beautifulsoup4

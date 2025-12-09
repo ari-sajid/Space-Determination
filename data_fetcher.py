@@ -13,18 +13,36 @@ from input_parser import InputParser
 
 class LiveDataFetcher:
     """Fetch live satellite orbital data from various sources."""
-    
+
     def __init__(self):
         """Initialize the data fetcher with common satellites."""
         self.base_url = "https://orbit.ing-now.com"
         self.parser = InputParser()
-        
-        # Common satellite IDs for quick access
+
+        # Expanded satellite catalog with popular satellites
         self.satellite_catalog = {
-            'iss': {'id': '25544', 'designator': '1998-067a', 'name': 'iss'},
-            'hubble': {'id': '20580', 'designator': '1990-037b', 'name': 'hst'},
-            'tiangong': {'id': '48274', 'designator': '2021-035a', 'name': 'css'},
+            'iss': {'id': '25544', 'designator': '1998-067a', 'name': 'iss', 'full_name': 'International Space Station'},
+            'hubble': {'id': '20580', 'designator': '1990-037b', 'name': 'hst', 'full_name': 'Hubble Space Telescope'},
+            'tiangong': {'id': '48274', 'designator': '2021-035a', 'name': 'css', 'full_name': 'China Space Station'},
+            'starlink-1': {'id': '44713', 'designator': '2019-074a', 'name': 'starlink-1', 'full_name': 'Starlink-1 Satellite'},
+            'gps-iir-2': {'id': '24876', 'designator': '1997-035a', 'name': 'navstar-43', 'full_name': 'GPS IIR-2 (NAVSTAR 43)'},
+            'noaa-18': {'id': '28654', 'designator': '2005-018a', 'name': 'noaa-18', 'full_name': 'NOAA 18 Weather Satellite'},
+            'terra': {'id': '25994', 'designator': '1999-068a', 'name': 'terra', 'full_name': 'Terra (EOS AM-1)'},
+            'aqua': {'id': '27424', 'designator': '2002-022a', 'name': 'aqua', 'full_name': 'Aqua (EOS PM-1)'},
+            'goes-16': {'id': '41866', 'designator': '2016-071a', 'name': 'goes-16', 'full_name': 'GOES 16 Weather Satellite'},
+            'spaceX-crew': {'id': '45623', 'designator': '2020-033a', 'name': 'crew-dragon', 'full_name': 'SpaceX Crew Dragon'},
         }
+
+    def list_available_satellites(self) -> Dict[str, str]:
+        """
+        Get a list of all available satellites in the catalog.
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary mapping satellite keys to full names
+        """
+        return {key: info['full_name'] for key, info in self.satellite_catalog.items()}
     
     def fetch_tle_from_orbiting_now(self, satellite_name: str = 'iss') -> Optional[str]:
         """
@@ -206,19 +224,27 @@ class LiveDataFetcher:
         
         if tle_data:
             # Save to temporary file for parsing
+            import os
             temp_file = f'temp_{satellite_name}_tle.txt'
-            with open(temp_file, 'w') as f:
-                f.write(tle_data)
-            
-            # Parse using existing InputParser
             try:
+                with open(temp_file, 'w') as f:
+                    f.write(tle_data)
+
+                # Parse using existing InputParser
                 elements = self.parser.parse_file(temp_file)
                 print(f"Successfully fetched live data for {satellite_name}")
                 return elements
             except Exception as e:
                 print(f"Error parsing TLE data: {e}")
                 return None
-        
+            finally:
+                # Clean up temporary file
+                if os.path.exists(temp_file):
+                    try:
+                        os.remove(temp_file)
+                    except:
+                        pass  # Ignore cleanup errors
+
         print(f"Could not fetch data for {satellite_name}")
         return None
     

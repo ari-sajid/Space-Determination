@@ -1,0 +1,54 @@
+============================================================
+ORBIT PROPAGATION REPORT
+============================================================
+
+PROPAGATION SUMMARY
+----------------------------------------
+Start Epoch: 2025-12-09T12:14:10.839552
+End Epoch:   2025-12-09T14:14:10.839552
+Duration:    7200.0 seconds (2.00 hours)
+Orbits:      1.29
+
+INITIAL ORBITAL ELEMENTS
+----------------------------------------
+Semi-major axis:         6796.479 km
+Eccentricity:            0.000340
+Inclination:               51.631 degrees
+RAAN:                     158.472 degrees
+Argument of Perigee:      223.819 degrees
+Mean Anomaly:             136.253 degrees
+Epoch:               2025-12-09T12:14:10.839552
+FINAL ORBITAL ELEMENTS
+----------------------------------------
+Semi-major axis:         6796.479 km
+Eccentricity:            0.000340
+Inclination:               51.631 degrees
+RAAN:                     158.472 degrees
+Argument of Perigee:      223.819 degrees
+Mean Anomaly:             241.088 degrees
+Epoch:               2025-12-09T14:14:10.839552
+FINAL STATE VECTORS (ECI)
+----------------------------------------
+Position [km]:
+  X:    -5580.716
+  Y:    -3545.338
+  Z:    -1579.086
+  Magnitude:     6797.597
+
+Velocity [km/s]:
+  VX:     3.778033
+  VY:    -3.389086
+  VZ:    -5.733180
+  Magnitude:     7.656944
+
+ORBIT CHARACTERISTICS
+----------------------------------------
+Orbit Type:     elliptical
+Altitude (peri): 416.0 km
+Altitude (apo):  420.7 km
+Orbital Period:  1.55 hours
+Mean Motion:     15.4945 rev/day
+
+============================================================
+Report generated: 2025-12-09T17:06:43.772567
+APC 524 Orbit Propagation Tool

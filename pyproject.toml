@@ -1,7 +1,7 @@
 [project]
 name = "space-determination"
 version = "0.1.0"
-description = "Orbital mechanics utilities including Kepler equation solver."
+description = "Orbit Propagation & Prediction Tool"
 requires-python = ">=3.9"
 
 [tool.ruff]

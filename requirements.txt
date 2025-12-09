@@ -1,5 +1,6 @@
 numpy
 matplotlib
-math
+requests
 datetime
 typing
+beautifulsoup4

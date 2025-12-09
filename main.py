@@ -40,6 +40,11 @@ def main():
         default='txt',
         help='Output format (default: txt)'
     )
+    parser.add_argument(
+        '--live',
+        type=str,
+        help='Fetch live data for satellite (e.g., iss, hubble, or NORAD ID)'
+    )
     
     args = parser.parse_args()
     

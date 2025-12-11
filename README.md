@@ -1,6 +1,6 @@
 # Space-Determination: Orbit Propagation & Prediction Tool
 
-An orbital mechanics toolkit for satellite trajectory analysis using live TLE data. Built for APC 524 at Princeton University.
+An advanced orbital mechanics toolkit for satellite trajectory analysis using live TLE data. Built for APC 524 at Princeton University.
 
 ## Features
 
@@ -13,18 +13,26 @@ An orbital mechanics toolkit for satellite trajectory analysis using live TLE da
 - **Ground Track Calculation**: Compute satellite ground tracks and passes
 - **3D Visualization**: Optional matplotlib-based orbit visualization
 
-## Requirements
+## Installation
+
+### Standard Installation
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
-**Dependencies:**
+### Development Installation (includes testing tools)
+
+```bash
+pip install -e ".[dev]"
+```
+
+**Requirements:**
 - Python 3.7+
-- numpy
-- matplotlib
-- requests
-- beautifulsoup4
+- numpy >= 1.20.0
+- matplotlib >= 3.3.0
+- requests >= 2.25.0
+- beautifulsoup4 >= 4.9.0
 
 ## Quick Start
 
@@ -173,28 +181,93 @@ ISS (ZARYA)
 
 ```
 Space-Determination/
-├── main.py                  # Main entry point with CLI
-├── data_fetcher.py          # Live TLE data fetching
-├── input_parser.py          # TLE file parser
-├── orbital_elements.py      # Orbital element data structures
-├── kepler_solver.py         # Kepler's equation solver
-├── propagator.py            # Two-body orbit propagator
-├── coordinate_systems.py    # Coordinate transformations
-├── output_generator.py      # Output formatting
-├── utils.py                 # Utility functions
-├── constants.py             # Physical constants
-├── visualization.py         # 3D orbit plotting
-├── tests/                   # Unit tests
-│   └── test_kepler_solver.py
-├── requirements.txt         # Python dependencies
-└── README.md               # This file
+├── main.py                     # Main entry point with CLI
+├── data_fetcher.py             # Live TLE data fetching
+├── input_parser.py             # TLE file parser
+├── orbital_elements.py         # Orbital element data structures
+├── kepler_solver.py            # Kepler's equation solver
+├── propagator.py               # Two-body orbit propagator
+├── coordinate_systems.py       # Coordinate transformations
+├── output_generator.py         # Output formatting
+├── utils.py                    # Utility functions
+├── constants.py                # Physical constants
+├── visualization.py            # 3D orbit plotting
+├── examples/                   # Example scripts
+│   ├── README.md              # Examples documentation
+│   ├── example_iss_tracking.py
+│   ├── example_propagation.py
+│   └── example_satellite_comparison.py
+├── tests/                      # Comprehensive test suite (42 tests)
+│   ├── test_kepler_solver.py
+│   ├── test_orbital_elements.py
+│   ├── test_propagator.py
+│   ├── test_coordinate_systems.py
+│   ├── test_input_parser.py
+│   └── test_utils.py
+├── .github/workflows/          # CI/CD configuration
+│   └── ci.yml
+├── pyproject.toml             # Package configuration
+├── requirements.txt           # Python dependencies
+├── API_REFERENCE.md           # Complete API documentation
+└── README.md                  # This file
 ```
 
-## Running Tests
+## Examples
+
+The `examples/` directory contains ready-to-run scripts demonstrating key functionality:
+
+### 1. ISS Tracking Example
+```bash
+python examples/example_iss_tracking.py
+```
+Fetches live ISS data, propagates orbit for 24 hours, and displays ground track coordinates.
+
+### 2. Basic Propagation Example
+```bash
+python examples/example_propagation.py
+```
+Creates custom orbital elements and propagates a sun-synchronous LEO satellite for multiple orbits.
+
+### 3. Satellite Comparison Example
+```bash
+python examples/example_satellite_comparison.py
+```
+Compares orbital parameters of multiple satellites (ISS, Hubble, GOES-16, Terra).
+
+See `examples/README.md` for detailed documentation on each example.
+
+## Testing
+
+Run the comprehensive test suite (42 tests covering core functionality):
 
 ```bash
+# Run all tests
 pytest tests/
+
+# Run with coverage report
+pytest tests/ --cov=. --cov-report=html
+
+# Run specific test file
+pytest tests/test_propagator.py -v
 ```
+
+### Test Coverage
+- **test_orbital_elements.py**: Orbital element validation and calculations (12 tests)
+- **test_propagator.py**: Orbit propagation and state tracking (10 tests)
+- **test_kepler_solver.py**: Kepler equation solving (2 tests)
+- **test_coordinate_systems.py**: Coordinate transformations (12 tests)
+- **test_input_parser.py**: TLE parsing and validation (12 tests)
+- **test_utils.py**: Utility functions and orbital mechanics (18 tests)
+
+## Continuous Integration
+
+The project includes GitHub Actions CI/CD that automatically:
+- Runs tests on Python 3.7, 3.8, 3.9, 3.10, and 3.11
+- Checks code formatting with black and ruff
+- Builds the package distribution
+- Generates coverage reports
+
+Workflow triggers on push to main branch and pull requests.
 
 ## Educational Use
 
@@ -261,7 +334,7 @@ pip install -r requirements.txt
 
 ## Authors
 
-David Herrera, Jackson Crocker, Ariyan Sajid
+Jackson Crocker, David Herrera, Ariyan Sajid
 
 ---
 
@@ -300,8 +373,12 @@ done
 - **CSV**: Spreadsheet-compatible, easy to plot
 - **JSON**: Machine-readable, structured data for further processing
 
-## Learn More
+## Documentation and Resources
 
+### API Reference
+- **[API_REFERENCE.md](API_REFERENCE.md)**: Complete API documentation with usage examples for all modules
+
+### External Resources
 - [TLE Format Specification](https://celestrak.org/NORAD/documentation/tle-fmt.php)
 - [Orbital Mechanics Fundamentals](https://en.wikipedia.org/wiki/Orbital_elements)
 - [Two-Body Problem](https://en.wikipedia.org/wiki/Two-body_problem)

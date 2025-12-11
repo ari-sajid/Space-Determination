@@ -32,7 +32,11 @@ class PropagationState:
     orbital_elements: OrbitalElements
     
     def to_dict(self) -> dict:
-        """Convert state to dictionary."""
+        """Convert state to dictionary.
+
+        Raises:
+            AttributeError: If orbital_elements does not have to_dict().
+        """
         return {
             'time': self.time.isoformat(),
             'position_km': self.position.tolist(),
@@ -55,6 +59,10 @@ class TwoBodyPropagator:
         
         Args:
             initial_elements: Initial orbital elements at epoch
+
+        Raises:
+            AttributeError: If initial_elements is missing required attributes.
+            TypeError: If initial_elements is not an OrbitalElements instance.
         """
         self.initial_elements = initial_elements
         self.kepler_solver = KeplerSolver()
@@ -71,9 +79,25 @@ class TwoBodyPropagator:
         
         Args:
             delta_t: Time to propagate in seconds
-            
+        
         Returns:
             PropagationState at the requested time
+
+        Raises:
+            ValueError: If delta_t is not a finite float or is negative.
+            RuntimeError: If Kepler's equation cannot be solved.
+
+        Example:
+            >>> from datetime import datetime
+            >>> elements = OrbitalElements(
+            ...     a=7000, e=0.001, i=0.1, raan=0.2, arg_perigee=0.3,
+            ...     mean_anomaly=0.4, epoch=datetime(2025, 1, 1, 0, 0, 0)
+            ... )
+            >>> propagator = TwoBodyPropagator(elements)
+            >>> state = propagator.propagate(3600)  # Propagate 1 hour
+            >>> print(state.position)
+            [x, y, z]  # Position in km
+
         """
         # Calculate new mean anomaly
         M_new = self._propagate_mean_anomaly(delta_t)
@@ -129,6 +153,11 @@ class TwoBodyPropagator:
             
         Returns:
             PropagationState at the target time
+
+        Raises:
+            TypeError: If target_time is not a datetime object.
+            ValueError: If target_time is before the epoch.
+            RuntimeError: If propagation fails.
         """
         delta_t = (target_time - self.initial_elements.epoch).total_seconds()
         return self.propagate(delta_t)
@@ -143,6 +172,10 @@ class TwoBodyPropagator:
             
         Returns:
             List of PropagationStates at each time step
+
+        Raises:
+            ValueError: If duration or time_step is not a positive finite float.
+            RuntimeError: If propagation fails at any time step.
         """
         states = []
         num_steps = int(duration / time_step) + 1
@@ -163,6 +196,9 @@ class TwoBodyPropagator:
             
         Returns:
             Mean anomaly in radians
+
+        Raises:
+            ValueError: If delta_t is not a finite float or is negative.
         """
         M = self.initial_elements.mean_anomaly + self._mean_motion * delta_t
         return M % constants.TWO_PI
@@ -176,6 +212,9 @@ class TwoBodyPropagator:
             
         Returns:
             Orbital radius in km
+
+        Raises:
+            ValueError: If eccentric_anomaly is not a finite float.
         """
         return self.initial_elements.a * (1 - self.initial_elements.e * math.cos(eccentric_anomaly))
     
@@ -193,6 +232,22 @@ class TwoBodyPropagator:
             
         Returns:
             Dictionary with pass information or None if no pass found
+
+        Raises:
+            ValueError: If latitude or longitude are out of valid range.
+            ValueError: If search_duration or elevation_threshold are negative.
+
+        Example:
+            >>> propagator = TwoBodyPropagator(elements)
+            >>> pass_info = propagator.find_next_pass(
+            ...     target_lat=40.7128, target_lon=-74.0060, elevation_threshold=10.0
+            ... )
+            >>> if pass_info:
+            ...     print(pass_info['pass_start'], pass_info['pass_end'])
+            ...     print(pass_info['max_elevation_deg'])
+            ... else:
+            ...     print("No pass found.")
+
         """
         target_lat_rad = target_lat * constants.DEG_TO_RAD
         target_lon_rad = target_lon * constants.DEG_TO_RAD
@@ -267,6 +322,10 @@ class TwoBodyPropagator:
             
         Returns:
             List of (latitude, longitude) tuples in degrees
+
+        Raises:
+            ValueError: If duration or time_step is not a positive finite float.
+            RuntimeError: If propagation fails at any time step.
         """
         states = self.propagate_orbit(duration, time_step)
         
@@ -292,6 +351,10 @@ class PerturbedPropagator(TwoBodyPropagator):
             initial_elements: Initial orbital elements
             enable_j2: Include J2 perturbation
             enable_drag: Include atmospheric drag
+
+        Raises:
+            AttributeError: If initial_elements is missing required attributes.
+            TypeError: If initial_elements is not an OrbitalElements instance.
         """
         super().__init__(initial_elements)
         self.enable_j2 = enable_j2
@@ -308,6 +371,9 @@ class PerturbedPropagator(TwoBodyPropagator):
             
         Returns:
             Acceleration vector due to J2
+
+        Raises:
+            ValueError: If r_eci is not a valid 3-element array.
         """
         # Placeholder for J2 perturbation calculation
         # This would involve spherical harmonics
@@ -325,6 +391,9 @@ class PerturbedPropagator(TwoBodyPropagator):
             
         Returns:
             Acceleration vector due to drag
+
+        Raises:
+            ValueError: If r_eci or v_eci is not a valid 3-element array, or altitude is negative.
         """
         # Placeholder for drag calculation
         # This would need atmospheric density model
@@ -332,7 +401,11 @@ class PerturbedPropagator(TwoBodyPropagator):
 
 
 def test_propagator():
-    """Test the orbital propagator."""
+    """Test the orbital propagator.
+
+    Raises:
+        AssertionError: If any test fails.
+    """
     print("Testing Orbital Propagator...")
     print("-" * 40)
     

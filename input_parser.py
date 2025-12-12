@@ -12,42 +12,40 @@ import constants
 
 
 class InputParser:
-    """Parser for various orbital data input formats."""
-    
     def __init__(self):
-        """Initialize the input parser."""
+        """Initialize input parser."""
         self.tle_pattern = re.compile(r'^[12] ')  # TLE lines start with 1 or 2
         
     def parse_file(self, filename: str) -> OrbitalElements:
         """
-        Parse an input file and return orbital elements.
+        Parse input file and return orbital elements.
         
         Args:
-            filename: Path to input file
+            filename: Input file path
             
         Returns:
             OrbitalElements: Parsed orbital elements
             
         Raises:
-            FileNotFoundError: If file doesn't exist
-            ValueError: If file format is invalid
+            FileNotFoundError: File doesn't exist
+            ValueError: Invalid file format
         """
         with open(filename, 'r') as f:
             lines = f.readlines()
         
-        # Clean lines (strip whitespace)
+        # Clean lines
         lines = [line.strip() for line in lines if line.strip()]
         
-        # Try to detect format
+        # Detect format
         if self._is_tle_format(lines):
             return self.parse_tle(lines)
         else:
-            # Try to parse as simple orbital elements format
+            # Parse as simple orbital elements format
             return self.parse_simple_format(lines)
     
     def _is_tle_format(self, lines: List[str]) -> bool:
         """
-        Check if lines appear to be in TLE format.
+        Check if lines are in TLE format.
         
         Args:
             lines: List of file lines
@@ -55,11 +53,11 @@ class InputParser:
         Returns:
             bool: True if TLE format detected
         """
-        # TLE has either 2 lines (no name) or 3 lines (with name)
+        # TLE should have 2 or 3 lines
         if len(lines) < 2:
             return False
         
-        # Check if we have lines starting with "1 " and "2 "
+        # Check for lines starting with "1 " and "2 "
         has_line1 = any(line.startswith('1 ') for line in lines)
         has_line2 = any(line.startswith('2 ') for line in lines)
         
@@ -67,12 +65,12 @@ class InputParser:
     
     def parse_tle(self, lines: List[str]) -> OrbitalElements:
         """
-        Parse Two-Line Element (TLE) format.
+        Parse TLE format.
         
         TLE Format:
         Line 0 (optional): Satellite name
-        Line 1: Contains epoch, ballistic coefficient, etc.
-        Line 2: Contains orbital elements
+        Line 1: Epoch, ballistic coefficient, etc.
+        Line 2: Orbital elements
         
         Args:
             lines: TLE lines (2 or 3 lines)
@@ -81,9 +79,9 @@ class InputParser:
             OrbitalElements: Parsed orbital elements
             
         Raises:
-            ValueError: If TLE format is invalid
+            ValueError: Invalid TLE format
         """
-        # Find the actual TLE lines (starting with 1 and 2)
+        # Find actual TLE lines (starting with 1 and 2)
         line1 = None
         line2 = None
         satellite_name = None
@@ -91,7 +89,7 @@ class InputParser:
         for i, line in enumerate(lines):
             if line.startswith('1 '):
                 line1 = line
-                # Check if previous line is the satellite name
+                # Check if previous line is satellite name
                 if i > 0 and not lines[i-1].startswith(('1 ', '2 ')):
                     satellite_name = lines[i-1]
             elif line.startswith('2 '):
@@ -167,7 +165,7 @@ class InputParser:
     
     def parse_simple_format(self, lines: List[str]) -> OrbitalElements:
         """
-        Parse a simple text format with orbital elements.
+        Parse simple text format with orbital elements.
         
         Expected format (one value per line or key-value pairs):
         semi_major_axis: 7000.0  # km
@@ -191,7 +189,7 @@ class InputParser:
             if line.startswith('#') or not line.strip():
                 continue
             
-            # Try to parse key-value pairs
+            # Parse key-value pairs
             if ':' in line:
                 key, value = line.split(':', 1)
                 key = key.strip().lower()
@@ -225,70 +223,3 @@ class InputParser:
             raise ValueError(f"Missing required orbital elements: {missing}")
         
         return OrbitalElements(**elements_dict)
-    
-    def parse_observation_data(self, observations: List[Tuple[datetime, float, float, float]]) -> OrbitalElements:
-        """
-        Parse ground-based observation data to determine orbital elements.
-        
-        Args:
-            observations: List of (time, azimuth, elevation, range) tuples
-            
-        Returns:
-            OrbitalElements: Estimated orbital elements
-            
-        Note:
-            This is a placeholder for orbit determination from observations.
-            Full implementation would require methods like Gauss or Laplace.
-        """
-        print("Warning: Orbit determination from observations not yet implemented")
-        print(f"Received {len(observations)} observations")
-        
-        # Return dummy orbital elements for now
-        return OrbitalElements(
-            a=7000.0,
-            e=0.01,
-            i=45.0 * constants.DEG_TO_RAD,
-            raan=0.0,
-            arg_perigee=0.0,
-            mean_anomaly=0.0,
-            epoch=observations[0][0] if observations else datetime.now()
-        )
-
-
-def create_sample_tle_file(filename: str = "sample_tle.txt"):
-    """
-    Create a sample TLE file for testing.
-    
-    Args:
-        filename: Output filename
-    """
-    tle_content = """ISS (ZARYA)
-1 25544U 98067A   25015.50000000  .00003456  00000-0  12345-3 0  9999
-2 25544  51.6439  123.4567  0001234  234.5678  125.4321  15.50123456789012"""
-    
-    with open(filename, 'w') as f:
-        f.write(tle_content)
-    
-    print(f"Sample TLE file created: {filename}")
-
-
-def create_sample_simple_file(filename: str = "sample_elements.txt"):
-    """
-    Create a sample simple format file for testing.
-    
-    Args:
-        filename: Output filename
-    """
-    content = """# Sample orbital elements file
-semi_major_axis: 7000.0  # km
-eccentricity: 0.001
-inclination: 45.0  # degrees
-raan: 30.0  # degrees
-arg_perigee: 60.0  # degrees  
-mean_anomaly: 0.0  # degrees
-epoch: 2025-01-15T12:00:00"""
-    
-    with open(filename, 'w') as f:
-        f.write(content)
-    
-    print(f"Sample orbital elements file created: {filename}")

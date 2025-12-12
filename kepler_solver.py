@@ -7,9 +7,8 @@ import math
 from typing import Tuple, Optional
 import constants
 
-
 class KeplerSolver:
-    """Solver for Kepler's equation and related anomaly conversions."""
+    """Solves Kepler's equation and related anomaly conversions."""
     
     def __init__(self, tolerance: float = constants.KEPLER_TOLERANCE,
                  max_iterations: int = constants.MAX_KEPLER_ITERATIONS):
@@ -25,28 +24,25 @@ class KeplerSolver:
     
     def solve_kepler_equation(self, mean_anomaly: float, eccentricity: float) -> float:
         """
-        DOCUMENTATION #1
-
         Solve Kepler's equation M = E - e*sin(E) for eccentric anomaly E.
-        
         Uses Newton-Raphson method for elliptical orbits (e < 1).
         
         Parameters
         ----------
         mean_anomaly : float
-            Mean anomaly M in radians. Will be normalized to [0, 2\pi].
+            Mean anomaly M (radians), normalized to [0, 2\pi].
         eccentricity : float
             Orbital eccentricity e. Must be in range [0, 1) for elliptical orbits.
             
         Returns
         -------
         float
-            Eccentric anomaly E in radians, normalized to [0, 2\pi].
+            Eccentric anomaly E (radians), normalized to [0, 2\pi].
             
         Raises
         ------
         ValueError
-            If eccentricity is negative or >= 1 (parabolic/hyperbolic orbits not supported).
+            Eccentricity is negative or >= 1 (parabolic/hyperbolic orbits not supported).
             If Newton-Raphson iteration fails to converge within max_iterations.
             
         Notes
@@ -83,7 +79,6 @@ class KeplerSolver:
         M = mean_anomaly % constants.TWO_PI
         
         # Initial guess for eccentric anomaly
-        # Use a better initial guess based on eccentricity
         if eccentricity < 0.8:
             E = M  # Good for low eccentricity
         else:
@@ -110,7 +105,7 @@ class KeplerSolver:
             
             E = E_new
         
-        # If we reach here, convergence failed
+        # Failed convergence
         raise ValueError(f"Kepler equation did not converge after {self.max_iterations} iterations")
     
     def mean_to_true_anomaly(self, mean_anomaly: float, eccentricity: float) -> float:
@@ -171,7 +166,7 @@ class KeplerSolver:
         >>> print(f"Mean: 45.00 deg, True: {math.degrees(nu):.2f} deg")
         Mean: 45.00 deg, True: 45.09 deg
         """
-        # First, get eccentric anomaly
+        # Get eccentric anomaly
         E = self.solve_kepler_equation(mean_anomaly, eccentricity)
         
         # Convert eccentric anomaly to true anomaly
@@ -236,7 +231,7 @@ class KeplerSolver:
         E = eccentric_anomaly
         e = eccentricity
         
-        # Method 1: Using half-angle formula (more stable)
+        # Method 1: Using half-angle formula
         beta = e / (1 + math.sqrt(1 - e**2))
         true_anomaly = E + 2 * math.atan2(beta * math.sin(E), 1 - beta * math.cos(E))
         
@@ -324,20 +319,20 @@ class KeplerSolver:
         >>> print(f"Mean anomaly at apoapsis: {math.degrees(M):.2f} deg")
         Mean anomaly at apoapsis: 180.00 deg
         """
-        # First convert to eccentric anomaly
+        # Convert to eccentric anomaly
         E = self.true_to_eccentric_anomaly(true_anomaly, eccentricity)
         
-        # Then convert to mean anomaly using Kepler's equation
+        # Convert to mean anomaly via Kepler's equation
         M = E - eccentricity * math.sin(E)
         
         return M % constants.TWO_PI
     
     def calculate_flight_path_angle(self, true_anomaly: float, eccentricity: float) -> float:
         """
-        Calculate the flight path angle (angle between velocity and local horizon).
+        Calculate flight path angle.
         
         Args:
-            true_anomaly: True anomaly in radians
+            true_anomaly: True anomaly (radians)
             eccentricity: Orbital eccentricity
             
         Returns:
@@ -346,7 +341,7 @@ class KeplerSolver:
         nu = true_anomaly
         e = eccentricity
         
-        # Flight path angle formula
+        # Flight path angle
         gamma = math.atan2(e * math.sin(nu), 1 + e * math.cos(nu))
         
         return gamma
@@ -447,40 +442,6 @@ class KeplerSolver:
         # Propagated mean anomaly
         M = initial_mean_anomaly + n * t
         
-        return M % constants.TWO_PI
-
-
-def test_kepler_solver():
-    """Test the Kepler solver with some known cases."""
-    solver = KeplerSolver()
-    
-    print("Testing Kepler Solver...")
-    print("-" * 40)
-    
-    # Test case 2: Low eccentricity
-    print("\nTest 2: Low eccentricity (e = 0.1)")
-    M = math.pi / 3  # 60 degrees
-    e = 0.1
-    E = solver.solve_kepler_equation(M, e)
-    nu = solver.mean_to_true_anomaly(M, e)
-    print(f"  M = {math.degrees(M):.2f} deg")
-    print(f"  E = {math.degrees(E):.2f} deg")
-    print(f"  ν = {math.degrees(nu):.2f} deg")
-    
-    # Test case 3: High eccentricity
-    print("\nTest 3: High eccentricity (e = 0.8)")
-    M = math.pi  # 180 degrees
-    e = 0.8
-    E = solver.solve_kepler_equation(M, e)
-    nu = solver.mean_to_true_anomaly(M, e)
-    print(f"  M = {math.degrees(M):.2f} deg")
-    print(f"  E = {math.degrees(E):.2f} deg")
-    print(f"  ν = {math.degrees(nu):.2f} deg")
-    
-    print("-" * 40)
-    print("Tests complete!")
-
+        return M % constants.TWO_PI 
 
 if __name__ == "__main__":
-    # Run tests if this file is executed directly
-    test_kepler_solver()

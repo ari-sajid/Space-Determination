@@ -1,5 +1,5 @@
 """
-Physical and mathematical constants for orbital mechanics calculations.
+Physical and mathematical constants for calculations.
 All units are in SI unless otherwise specified.
 """
 
@@ -8,7 +8,7 @@ import math
 # Earth parameters
 EARTH_MU = 398600.4418  # km³/s² - Earth's gravitational parameter
 EARTH_RADIUS = 6378.137  # km - Earth's equatorial radius
-EARTH_J2 = 1.08262668e-3  # J2 perturbation coefficient (for future use)
+EARTH_J2 = 1.08262668e-3  # J2 perturbation coefficient - not currently used :(
 EARTH_ROTATION_RATE = 7.2921159e-5  # rad/s - Earth's rotation rate
 
 # Mathematical constants

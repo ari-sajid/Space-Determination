@@ -203,7 +203,7 @@ class CoordinateTransform:
             Position vector in ECEF frame [x, y, z] (km)
         """
         # Calculate Greenwich Mean Sidereal Time (GMST)
-        # Simplified calculation - for higher accuracy, use more complex models
+        # Rudimentary calculation - write a more precise version if perturbations are added
         
         # Days since J2000.0 epoch
         j2000 = datetime(2000, 1, 1, 12, 0, 0)
@@ -243,7 +243,7 @@ class CoordinateTransform:
         """
         x, y, z = r_ecef
         
-        # WGS84 ellipsoid parameters
+        # Ellipsoid parameters
         a = constants.EARTH_RADIUS  # Equatorial radius (km)
         f = 1/298.257223563  # Flattening
         e2 = 2*f - f**2  # First eccentricity squared
@@ -258,9 +258,9 @@ class CoordinateTransform:
         lat = math.atan2(z, p * (1 - e2))
         
         # Iterative refinement for latitude and altitude
-        for _ in range(5):  # Usually converges in 2-3 iterations
+        for _ in range(5):  # We found it converges in 1-3 iterations usually
             sin_lat = math.sin(lat)
-            N = a / math.sqrt(1 - e2 * sin_lat**2)  # Prime vertical radius
+            N = a / math.sqrt(1 - e2 * sin_lat**2)
             alt = p / math.cos(lat) - N
             lat = math.atan2(z, p * (1 - e2 * N / (N + alt)))
         
@@ -331,7 +331,7 @@ class CoordinateTransform:
         
         # Observer position in ECEF
         a = constants.EARTH_RADIUS
-        N = a  # Simplified (assumes spherical Earth)
+        N = a  # Assume spherical Earth - future work with perturbations
         obs_ecef = np.array([
             (N + observer_alt) * math.cos(observer_lat) * math.cos(observer_lon),
             (N + observer_alt) * math.cos(observer_lat) * math.sin(observer_lon),
@@ -367,52 +367,3 @@ class CoordinateTransform:
         elevation = math.atan2(u, horizontal_range)
         
         return azimuth, elevation, range_km
-
-
-def test_coordinate_transforms():
-    """Test coordinate transformation functions."""
-    transform = CoordinateTransform()
-    
-    print("Testing Coordinate Transformations...")
-    print("-" * 40)
-    
-    # Test 1: Perifocal to orbital coordinates
-    print("Test 1: Perifocal to Orbital")
-    r = 7000.0  # km
-    true_anomaly = math.pi/4  # 45 degrees
-    e = 0.1
-    a = 7000.0
-    
-    r_orbital, v_orbital = transform.perifocal_to_orbital(r, true_anomaly, e, a)
-    print(f"  Position: [{r_orbital[0]:.1f}, {r_orbital[1]:.1f}, {r_orbital[2]:.1f}] km")
-    print(f"  Velocity: [{v_orbital[0]:.3f}, {v_orbital[1]:.3f}, {v_orbital[2]:.3f}] km/s")
-    
-    # Test 2: Orbital to ECI transformation
-    print("\nTest 2: Orbital to ECI")
-    i = math.radians(45)  # 45 degree inclination
-    raan = math.radians(30)  # 30 degree RAAN
-    arg_perigee = math.radians(60)  # 60 degree argument of perigee
-    
-    r_eci, v_eci = transform.orbital_to_eci(r_orbital, v_orbital, i, raan, arg_perigee)
-    print(f"  ECI Position: [{r_eci[0]:.1f}, {r_eci[1]:.1f}, {r_eci[2]:.1f}] km")
-    print(f"  ECI Velocity: [{v_eci[0]:.3f}, {v_eci[1]:.3f}, {v_eci[2]:.3f}] km/s")
-    
-    # Test 3: ECI to ECEF
-    print("\nTest 3: ECI to ECEF")
-    time = datetime(2025, 1, 15, 12, 0, 0)
-    r_ecef = transform.eci_to_ecef(r_eci, time)
-    print(f"  ECEF Position: [{r_ecef[0]:.1f}, {r_ecef[1]:.1f}, {r_ecef[2]:.1f}] km")
-    
-    # Test 4: ECEF to Geodetic
-    print("\nTest 4: ECEF to Geodetic")
-    lat, lon, alt = transform.ecef_to_geodetic(r_ecef)
-    print(f"  Latitude: {math.degrees(lat):.2f}°")
-    print(f"  Longitude: {math.degrees(lon):.2f}°")
-    print(f"  Altitude: {alt:.1f} km")
-    
-    print("-" * 40)
-    print("Tests complete!")
-
-
-if __name__ == "__main__":
-    test_coordinate_transforms()

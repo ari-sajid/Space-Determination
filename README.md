@@ -1,6 +1,6 @@
 # Space-Determination: Orbit Propagation & Prediction Tool
 
-An advanced orbital mechanics toolkit for satellite trajectory analysis using live TLE data. Built for APC 524 at Princeton University.
+An orbital mechanics toolkit for satellite trajectory analysis using live TLE (two line element) data. Built for APC 524 at Princeton University.
 
 ## Features
 
@@ -8,7 +8,7 @@ An advanced orbital mechanics toolkit for satellite trajectory analysis using li
 - **Multiple Satellites**: Support for ISS, Hubble, Tiangong, and many more popular satellites
 - **Accurate Propagation**: Two-body orbital mechanics with Kepler equation solving
 - **Flexible Time Ranges**: Propagate orbits from seconds to weeks
-- **Multiple Output Formats**: TXT, CSV, and JSON output support
+- **Multiple File Output Formats**: TXT, CSV, and JSON output support
 - **Coordinate Transformations**: ECI, ECEF, and geodetic coordinate systems
 - **Ground Track Calculation**: Compute satellite ground tracks and passes
 - **3D Visualization**: Optional matplotlib-based orbit visualization
@@ -28,7 +28,7 @@ pip install -e ".[dev]"
 ```
 
 **Requirements:**
-- Python 3.7+
+- Python >= 3.7.0
 - numpy >= 1.20.0
 - matplotlib >= 3.3.0
 - requests >= 2.25.0
@@ -63,7 +63,7 @@ Propagates Hubble Space Telescope orbit for 1 day with CSV output.
 ### 4. Use Local TLE File
 
 ```bash
-python main.py satellite_tle.txt --time 3600
+python main.py <file_name>}.txt --time 3600
 ```
 
 Reads TLE data from a local file and propagates for 1 hour.
@@ -173,9 +173,9 @@ ISS (ZARYA)
 2 25544  51.6439 123.4567   0001234  89.1234 270.9876 15.50103472123456
 ```
 
-**Line 0:** Satellite name (optional)
-**Line 1:** Epoch, ballistic coefficient, etc.
-**Line 2:** Orbital elements (inclination, RAAN, eccentricity, etc.)
+**Line 0:** Satellite name
+**Line 1:** Satellite number, international designator, etc.. (See Resources section at the bottom)
+**Line 2:** Orbital elements 
 
 ## Project Structure
 
@@ -197,7 +197,7 @@ Space-Determination/
 │   ├── example_iss_tracking.py
 │   ├── example_propagation.py
 │   └── example_satellite_comparison.py
-├── tests/                      # Comprehensive test suite
+├── tests/                      # test suite
 │   ├── test_kepler_solver.py
 │   ├── test_orbital_elements.py
 │   ├── test_propagator.py
@@ -256,7 +256,7 @@ pytest tests/test_propagator.py -v
 - **test_kepler_solver.py**: Kepler equation solving (2 tests)
 - **test_coordinate_systems.py**: Coordinate transformations (12 tests)
 - **test_input_parser.py**: TLE parsing and validation (12 tests)
-- **test_utils.py**: Utility functions and orbital mechanics (18 tests)
+- **test_utils.py**: Utility functions and orbital mechanics (3 tests)
 
 ## Continuous Integration
 

@@ -291,27 +291,4 @@ class LiveDataFetcher:
                 time.sleep(update_interval)
 
 
-def test_live_fetcher():
-    """Test live data fetcher."""
-    import numpy as np
-    
-    print("Testing Live Data Fetcher...")
-    print("-" * 40)
-    
-    fetcher = LiveDataFetcher()
-    
-    # Test 1: Fetch ISS data
-    print("Test 1: Fetching ISS orbital data")
-    elements = fetcher.get_orbital_elements('iss')
-    if elements:
-        print(elements)
-        altitude = elements.a - 6378.137
-        print(f"  Current altitude: {altitude:.1f} km")
-        print(f"  Period: {elements.period/60:.1f} minutes")
-    
-    print("-" * 40)
-    print("Tests complete!")
 
-
-if __name__ == "__main__":
-    test_live_fetcher()

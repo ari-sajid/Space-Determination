@@ -14,10 +14,11 @@ from data_fetcher import LiveDataFetcher
 
 
 def list_satellites():
-    """Display available satellites and exit."""
+    """Display available satellites."""
     fetcher = LiveDataFetcher()
     satellites = fetcher.list_available_satellites()
 
+    # Format it to be beautiful
     print("\n=== Available Satellites ===\n")
     print(f"{'Key':<15} {'Full Name':<40}")
     print("-" * 55)
@@ -31,7 +32,7 @@ def list_satellites():
 def main():
     """Main function to run the orbit propagation tool."""
 
-    # Set up command line arguments
+    # Set up command line arguments and make it as easy to use as possible
     parser = argparse.ArgumentParser(
         description='Orbit Propagation & Prediction Tool - Now with Live TLE Data!',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -51,6 +52,7 @@ Examples:
         """
     )
 
+    # Define arguments and help messages to guide users
     parser.add_argument(
         'input_file',
         nargs='?',
